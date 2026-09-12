@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ingyenes háztartási mobildíj-kalkulátor: Telekom, Yettel és One SIM-only tarifák összehasonlítása a családi kedvezményekkel együtt.">
+<meta name="theme-color" content="#FBFAF7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B1%3C/text%3E%3C/svg%3E">
+<title>Háztartási mobil-kalkulátor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
+
+<style>
+  :root{
+    --paper:#FBFAF7; --card:#FFFFFF; --ink:#1C1E1D; --muted:#6B6E6A; --line:#E7E3DB;
+    --accent:#0F6E63; --accent-soft:#E7F0EE; --accent-line:#CFE3DF;
+    --alert:#9A3412; --alert-bg:#FDEBE0; --alert-line:#F3C6AE;
+    --track:#EFEDE7; --faint:#A6A69F;
+    --telekom:#C4106A; --yettel:#2B5BD7; --one:#1AA672;
+    --shadow:0 1px 2px rgba(28,30,29,.04), 0 4px 14px rgba(28,30,29,.05);
+    --shadow-lg:0 2px 6px rgba(15,110,99,.08), 0 10px 30px rgba(15,110,99,.10);
+    --font:"Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--font); margin:0;}
+  .wrap{max-width:680px; margin:0 auto; padding-inline:18px; padding-block:28px 64px;}
+
+  h1{font-size:27px; font-weight:800; letter-spacing:-.025em; margin:0; line-height:1.1; text-wrap:balance;}
+  h2.sec{font-size:20px; font-weight:800; letter-spacing:-.02em; margin:0;}
+  .eyebrow{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .eyebrow span.t{font-size:11.5px; color:var(--muted); font-weight:700; letter-spacing:.06em; text-transform:uppercase;}
+  .dot{width:9px; height:9px; border-radius:999px; display:inline-block;}
+  .lede{color:var(--muted); font-size:15px; margin-top:8px; line-height:1.5; max-width:56ch;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow);}
+  .sub-card{margin-top:16px; padding:16px 16px 18px;}
+  .sub-title{font-weight:800; font-size:14px;}
+  .flabel{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:5px;}
+  .fwrap{margin-top:12px;}
+  .selbox{position:relative;}
+  select{width:100%; appearance:none; -webkit-appearance:none; border:1px solid var(--line); background:var(--card);
+    color:var(--ink); border-radius:10px; padding:11px 34px 11px 12px; font-size:14.5px; font-weight:600;
+    font-family:var(--font); cursor:pointer; line-height:1.2;}
+  .selbox::after{content:"▼"; position:absolute; right:13px; top:50%; transform:translateY(-50%);
+    pointer-events:none; color:var(--muted); font-size:11px;}
+  button{font-family:var(--font); cursor:pointer;}
+  button, select{transition:box-shadow .15s ease, border-color .15s ease, transform .05s ease;}
+  button:focus-visible, select:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  select:hover{border-color:var(--accent);}
+
+  .row{display:flex; align-items:center; gap:14px; margin-top:10px;}
+  .step{width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--card);
+    font-size:22px; font-weight:700; color:var(--ink); line-height:1;}
+  .step:hover{border-color:var(--accent);}
+  .num{font-size:28px; font-weight:800; min-width:34px; text-align:center; font-variant-numeric:tabular-nums;}
+  .num.sm{font-size:22px; min-width:26px;}
+  .qlabel{font-weight:700; font-size:15px;}
+
+  .toggles{margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;}
+  .toggle{flex:1 1 260px; border-radius:14px; padding:13px 14px;}
+  .toggle .tt{font-weight:700; font-size:14px; margin-bottom:10px;}
+  .seg{display:flex; gap:8px; max-width:300px;}
+  .seg button{flex:1; border:1px solid var(--line); background:var(--card); color:var(--ink); font-weight:600;
+    border-radius:9px; padding:8px 6px; font-size:13.5px;}
+  .seg button[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-soft); font-weight:800;}
+
+  .cta{margin-top:24px; width:100%; background:var(--accent); color:#fff; border:none; border-radius:14px;
+    padding:16px 18px; font-size:16.5px; font-weight:800; box-shadow:var(--shadow-lg);}
+  .cta:hover{transform:translateY(-1px);}
+  .cta:active{transform:translateY(0);}
+
+  .res-h{font-size:13px; font-weight:800; color:var(--muted); letter-spacing:.04em; margin:0 0 14px;}
+  .rcard{border:1px solid var(--line); border-radius:16px; padding:17px; margin-bottom:12px; background:var(--card); box-shadow:var(--shadow);}
+  .rcard.win{border-color:var(--accent); background:var(--accent-soft); box-shadow:var(--shadow-lg);}
+  .rhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+  .rname{display:flex; align-items:center; gap:10px;}
+  .swatch{width:10px; height:10px; border-radius:3px; display:inline-block;}
+  .pname{font-weight:800; font-size:17px;}
+  .badge{font-size:11px; font-weight:800; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 8px; white-space:nowrap;}
+  .price{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.01em; white-space:nowrap;}
+  .per{font-size:12px; color:var(--muted);}
+  .bar{height:6px; background:var(--track); border-radius:999px; margin-top:12px; overflow:hidden;}
+  .bar i{display:block; height:100%; border-radius:999px;}
+  .warnbox{margin-top:12px; background:var(--alert-bg); border:1px solid var(--alert-line); color:var(--alert);
+    border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; font-weight:600;}
+  .note{margin-top:12px; font-size:13px; color:var(--muted);}
+  .note b{color:var(--ink);}
+  .linkbtn{background:transparent; border:none; color:var(--accent); font-weight:700; font-size:13px; padding:0; margin-top:12px;}
+  .linkbtn:hover{text-decoration:underline;}
+  .bd{margin-top:10px; border-top:1px solid var(--line); padding-top:10px;}
+  .rcard.win .bd{border-top-color:var(--accent-line);}
+  .bl{display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:5px 0;}
+  .bl .l{color:var(--muted);}
+  .bl .v{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .tag-a{color:var(--accent);} .tag-w{color:var(--alert);} .tag-f{color:var(--faint);}
+  .tiny{font-size:12px; color:var(--faint); margin-top:4px;}
+  .summary{font-size:14px; line-height:1.5; padding:14px 16px; border-radius:14px; margin-top:4px;}
+  .method{margin-top:10px; padding:14px 16px; border-radius:12px; font-size:13px; color:var(--muted); line-height:1.55;}
+  .method p{margin:0 0 8px;} .method p:last-child{margin:0;} .method b{color:var(--ink);}
+
+  .manual{margin-top:44px; border-top:1px solid var(--line); padding-top:28px;}
+  .tabs{display:flex; gap:8px; margin-top:16px;}
+  .tabs button{flex:1; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:12px;
+    padding:11px 6px; font-weight:800; font-size:14.5px; display:flex; align-items:center; justify-content:center; gap:7px;
+    box-shadow:var(--shadow);}
+  .tabs button[aria-selected="true"]{color:#fff; box-shadow:none;}
+  .exlist{margin-top:8px; display:flex; flex-direction:column; gap:7px;}
+  .exlist label{display:flex; align-items:center; gap:9px; font-size:13px; cursor:pointer;}
+  .exlist input{width:17px; height:17px; accent-color:var(--accent); flex:none;}
+  .exlist .en{flex:1;}
+  .exlist .ep{color:var(--muted); font-variant-numeric:tabular-nums;}
+  .msum{margin-top:16px; border-radius:16px; padding:17px; background:var(--card); box-shadow:var(--shadow-lg);}
+  .mline{padding:4px 0;}
+  .mex{font-size:12px; color:var(--faint); margin-top:2px;}
+
+  footer{margin-top:40px; padding-top:18px; border-top:1px solid var(--line); font-size:12.5px; color:var(--faint); line-height:1.6;}
+
+  @media (max-width:430px){
+    h1{font-size:23px;}
+    .tabs{flex-wrap:wrap;}
+    .tabs button{flex:1 1 100%;}
+    .price{font-size:20px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important; animation:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">
+    <span style="display:inline-flex;gap:4px">
+      <span class="dot" style="background:var(--telekom)"></span>
+      <span class="dot" style="background:var(--yettel)"></span>
+      <span class="dot" style="background:var(--one)"></span>
+    </span>
+    <span class="t">független · valós árak · 2026</span>
+  </div>
+  <h1>Háztartási mobil-kalkulátor</h1>
+  <p class="lede">Melyik szolgáltatónál a legolcsóbb az egész háztartás? Add meg, ki mit használ — a kalkulátor a három
+    eltérő kedvezménylogikát (Telekom sávos, Yettel darabszám, One havidíjkedvezmény) is figyelembe veszi.</p>
+
+  <section style="margin-top:24px">
+    <label class="qlabel" for="cnt-val">Hány mobil-előfizetés?</label>
+    <div class="row">
+      <button class="step" data-act="count" data-d="-1" aria-label="Kevesebb előfizetés">–</button>
+      <span class="num" id="cnt-val" aria-live="polite">2</span>
+      <button class="step" data-act="count" data-d="1" aria-label="Több előfizetés">+</button>
+    </div>
+  </section>
+
+  <div id="subs"></div>
+
+  <div class="toggles">
+    <div class="card toggle">
+      <div class="tt">Vállalsz hűségidőt?</div>
+      <div class="seg" id="loyal-seg">
+        <button data-act="loyal" data-v="1" aria-pressed="true">Igen</button>
+        <button data-act="loyal" data-v="0" aria-pressed="false">Nem</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="cta" data-act="calc">Számítás</button>
+
+  <section id="eredmeny"></section>
+
+  <section class="manual">
+    <h2 class="sec">Szolgáltatónkénti kalkuláció</h2>
+    <p class="lede" style="font-size:14px">Ha már tudod, melyik tarifát néznéd: állítsd össze kézzel, extrákkal együtt.</p>
+
+    <div class="tabs" id="mtabs" role="tablist"></div>
+
+    <div class="toggles" id="mtoggles"></div>
+
+    <div class="row" style="margin-top:18px">
+      <span class="qlabel">Előfizetések:</span>
+      <button class="step" data-act="mcount" data-d="-1" aria-label="Kevesebb előfizetés">–</button>
+      <span class="num sm" id="mcnt-val" aria-live="polite">2</span>
+      <button class="step" data-act="mcount" data-d="1" aria-label="Több előfizetés">+</button>
+    </div>
+
+    <div id="mlines"></div>
+    <div id="msum"></div>
+  </section>
+
+  <footer>
+    Tájékoztató kalkuláció nyilvános, 2026-os SIM-only listaárak alapján. Nem tartalmaz retenciós ajánlatot,
+    készülékárat/részletet, belépési díjat és inflációkövető korrekciót. A tényleges ajánlat a szolgáltatónál dől el.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================ ADATOK ============================
+     Árfrissítéshez csak ezeket a tömböket kell átírni.               */
+
+  var SLOW = 5; // Mbit/s — e felett nem jelzünk lassú netet
+
+  var PROVIDERS = {
+    telekom: {
+      name: "Telekom", key: "telekom", structure: "split",
+      ePack: 500, smsAddon: 500, householdKind: "band",
+      bands: [
+        { upTo: 19999, pct: 0 }, { upTo: 29999, pct: 0.15 },
+        { upTo: 49999, pct: 0.20 }, { upTo: Infinity, pct: 0.30 }
+      ],
+      voiceOptions: [
+        { id: "tvS", name: "Mobil S (50 perc)", calls: 50, price: 2390, list: 13590 },
+        { id: "tvM", name: "Mobil M (hálón belül korl. + 30 perc)", calls: 30, onNet: true, price: 4330, list: 15530 },
+        { id: "tvL", name: "Mobil L (korlátlan)", calls: "unlimited", price: 7390, list: 18590 }
+      ],
+      dataOptions: [
+        { id: "tdS", name: "Net S (5 GB)", data: 5, speed: "full", price: 3050 },
+        { id: "tdM", name: "Net M (30 GB)", data: 30, speed: "full", price: 7130 },
+        { id: "tdL", name: "Net L (korlátlan)", data: "unlimited", speed: "full", price: 10700 }
+      ]
+    },
+    yettel: {
+      name: "Yettel", key: "yettel", structure: "combined",
+      ePackIncluded: true, smsAddon: 0, householdKind: "count-excl",
+      fullPct: function (q) { return q >= 4 ? 0.30 : q === 3 ? 0.20 : q === 2 ? 0.15 : 0; },
+      plans: [
+        { id: "yStart", name: "Start (5 GB, 100 perc)", data: 5, calls: 100, speed: "full", list: 4990, noBundle: true },
+        { id: "yXS", name: "Prime XS (30 GB, 200 perc)", data: 30, calls: 200, speed: "full", list: 9490, listDevice: 9990 },
+        { id: "yS", name: "Prime S (15 GB, korlátlan hívás)", data: 15, calls: "unlimited", speed: "full", list: 12490, listDevice: 12990 },
+        { id: "yM", name: "Prime M (korlátlan adat, 250 perc)", data: "unlimited", calls: 250, speed: "full", list: 14990, listDevice: 15990 },
+        { id: "yL", name: "Prime L (korlátlan adat + hívás)", data: "unlimited", calls: "unlimited", speed: "full", list: 17990, listDevice: 19490 },
+        { id: "yXXL", name: "Prime XXL (korlátlan adat, hívás + SMS)", data: "unlimited", calls: "unlimited", speed: "full", smsUnlimited: true, list: 22990, listDevice: 25490 }
+      ]
+    },
+    one: {
+      name: "One", key: "one", structure: "combined",
+      ePackIncluded: true, smsAddon: 0, householdKind: "none",
+      plans: [
+        { id: "oS", name: "Tarifa S (3 GB, 150 perc + hálón belül korl.)", data: 3, calls: 150, onNet: true, speed: 5, list: 3990, promo: 0 },
+        { id: "oM", name: "Tarifa M (5 GB, korlátlan hívás)", data: 5, calls: "unlimited", speed: 5, list: 6490, promo: 0 },
+        { id: "oZ", name: "Tarifa Z (korlátlan adat, 25 Ft/perc)", data: "unlimited", calls: 0, speed: 5, list: 6990, promo: 1000 },
+        { id: "oL", name: "Tarifa L (korlátlan adat + hívás)", data: "unlimited", calls: "unlimited", speed: 5, list: 9990, promo: 0 },
+        { id: "oXL", name: "Tarifa XL (korlátlan adat + hívás)", data: "unlimited", calls: "unlimited", speed: 100, list: 13990, promo: 2000 },
+        { id: "oXXL", name: "Tarifa XXL (korlátlan adat + hívás)", data: "unlimited", calls: "unlimited", speed: "full", list: 14990, promo: 2000 }
+      ]
+    }
+  };
+  var PKEYS = ["telekom", "yettel", "one"];
+  var PCOLOR = { telekom: "var(--telekom)", yettel: "var(--yettel)", one: "var(--one)" };
+
+  var CALL_PROFILES = [
+    { key: "alig", label: "Alig", hint: "~50 perc", need: 50 },
+    { key: "kozep", label: "Közepes", hint: "~150 perc", need: 150 },
+    { key: "sok", label: "Sok", hint: "~300 perc", need: 300 },
+    { key: "onnet", label: "Főleg hálózaton belül", hint: "hálón belül korlátlan + kevés más", need: "onnet" },
+    { key: "korl", label: "Korlátlan", hint: "bármelyik hálózat", need: "unlimited" }
+  ];
+  var DATA_PROFILES = [
+    { key: "d1", label: "Alig netezek", hint: "~1 GB", need: 1 },
+    { key: "d5", label: "Alap", hint: "chat, térkép · ~5 GB", need: 5 },
+    { key: "d15", label: "Napi videó", hint: "közösségi média · ~15 GB", need: 15 },
+    { key: "d50", label: "Sokat streamelek", hint: "hotspot · ~50 GB", need: 50 },
+    { key: "dU", label: "Korlátlan kell", hint: "korlátlan adat", need: "unlimited" }
+  ];
+  var SPEED_PROFILES = [
+    { key: "alap", label: "Alap", hint: "böngészés, zene, 1 videó", need: 0 },
+    { key: "gyors", label: "Gyors", hint: "HD/4K, több eszköz · 100 Mbit/s", need: 100 },
+    { key: "max", label: "Maximális", hint: "korlátlan sebesség", need: 101 }
+  ];
+  var SMS_PROFILES = [
+    { key: "alap", label: "Alap SMS", hint: "ritkán SMS-ezek", need: false },
+    { key: "sok", label: "Sok / korlátlan SMS", hint: "sokat SMS-ezek", need: true }
+  ];
+  var DEVICE_PROFILES = [
+    { key: "n", label: "Nem, csak SIM", hint: "" },
+    { key: "i", label: "Igen, készülékkel", hint: "" }
+  ];
+
+  var EXTRAS = {
+    telekom: [
+      { id: "multisim", name: "MultiSIM (/SIM)", price: 990 },
+      { id: "eunet", name: "5 GB net EU-n kívül, 8 ország", price: 3000 },
+      { id: "netvedelem", name: "Netvédelem Plusz", price: 590 },
+      { id: "sms500", name: "500 belföldi SMS", price: 500 },
+      { id: "euhivas", name: "EU-s számok korlátlan hívása", price: 2000 },
+      { id: "nemeu", name: "8 EU-n kívüli ország korlátlan hívása", price: 1000 },
+      { id: "nflx_a", name: "Netflix Alap (HD)", price: 3190 },
+      { id: "nflx_s", name: "Netflix Standard (Full HD)", price: 4490 },
+      { id: "nflx_p", name: "Netflix Prémium (UHD)", price: 5690 },
+      { id: "dis_s", name: "Disney+ Standard (Full HD)", price: 2990 },
+      { id: "dis_p", name: "Disney+ Prémium (4K)", price: 4890 },
+      { id: "sky_ad", name: "SkyShowtime Standard (reklámmal)", price: 2590 },
+      { id: "sky_s", name: "SkyShowtime Standard", price: 3190 },
+      { id: "hbo", name: "HBO Max Standard", price: 2900 },
+      { id: "egeszseg", name: "Telekom Egészség", price: 1690 }
+    ],
+    yettel: [
+      { id: "netpajzs", name: "NetPajzs (internetvédelem)", price: 650 },
+      { id: "y_hbo", name: "HBO Max (2. hónaptól, 1. hó 0 Ft)", price: 2390 }
+    ],
+    one: [
+      { id: "sms200", name: "Megújuló 200 SMS", price: 500 },
+      { id: "giga24", name: "Gigaboost 24 óra (egyszeri, 5G)", price: 500 },
+      { id: "giga72", name: "Gigaboost 72 óra (egyszeri, 5G)", price: 1290 }
+    ]
+  };
+
+  /* ============================ MOTOR ============================ */
+
+  function findNeed(arr, k) { var f = arr.find(function (p) { return p.key === k; }); return f ? f.need : arr[0].need; }
+  function callsOk(o, need) {
+    if (need === "unlimited") return o.calls === "unlimited";
+    if (need === "onnet") return o.calls === "unlimited" || o.onNet === true;
+    return o.calls === "unlimited" || (typeof o.calls === "number" && o.calls >= need);
+  }
+  function dataOk(o, need) { return o.data === "unlimited" ? true : need === "unlimited" ? false : o.data >= need; }
+  function speedOk(o, need) { return o.speed === "full" ? true : o.speed >= need; }
+  function speedNum(s) { return s === "full" ? Infinity : s; }
+  function cheapestBy(arr, key) {
+    return arr.length ? arr.reduce(function (a, b) { return b[key] < a[key] ? b : a; }) : null;
+  }
+  function bandPct(bands, total) {
+    var b = bands.find(function (x) { return total <= x.upTo; });
+    return (b || bands[bands.length - 1]).pct;
+  }
+
+  function subBase(prov, cN, dN, sN, smsNeed, loyalty, device) {
+    if (prov.structure === "split") {
+      var v = cheapestBy(prov.voiceOptions.filter(function (o) { return callsOk(o, cN); }), "price");
+      var d = cheapestBy(prov.dataOptions.filter(function (o) { return dataOk(o, dN) && speedOk(o, sN); }), "price");
+      if (!v || !d) return null;
+      var base = v.price + d.price + prov.ePack;      // e-Pack egyszer / előfizetés
+      if (smsNeed) base += prov.smsAddon;             // 500 SMS opció (közelítés)
+      return { label: v.name + " + " + d.name, base: base, noBundle: false, speed: d.speed, smsUnlim: false, smsGap: false };
+    }
+    var pool = prov.plans.filter(function (o) { return callsOk(o, cN) && dataOk(o, dN) && speedOk(o, sN); });
+    if (smsNeed && pool.some(function (p) { return p.smsUnlimited; })) {
+      pool = pool.filter(function (p) { return p.smsUnlimited; });   // Yettel → XXL
+    }
+    var priced = pool.map(function (x) {
+      var o = Object.assign({}, x);
+      o.price = device && x.listDevice != null ? x.listDevice : x.list;
+      return o;
+    });
+    var p = cheapestBy(priced, "price");
+    if (!p) return null;
+    var b = p.price;
+    if (loyalty && !device && p.promo) b -= p.promo;  // One havidíjkedvezmény: hűség + készülék nélkül
+    if (smsNeed && !p.smsUnlimited && prov.smsAddon) b += prov.smsAddon;
+    return {
+      label: p.name, base: b, noBundle: !!p.noBundle, speed: p.speed,
+      smsUnlim: !!p.smsUnlimited, smsGap: smsNeed && !p.smsUnlimited && !prov.smsAddon,
+      dev: device, deviceApplied: device && p.listDevice != null
+    };
+  }
+
+  function householdDiscount(prov, lines) {
+    var sum = lines.reduce(function (t, l) { return t + l.base; }, 0);
+    if (prov.householdKind === "band") {
+      var pct = bandPct(prov.bands, sum);
+      return { off: Math.round(sum * pct), label: pct ? "sávos kedvezmény (" + Math.round(pct * 100) + "%)" : "" };
+    }
+    if (prov.householdKind === "count-excl") {
+      var qual = lines.filter(function (l) { return !l.noBundle; });
+      var q = qual.length, p2 = prov.fullPct(q);
+      return {
+        off: Math.round(qual.reduce(function (t, l) { return t + l.base; }, 0) * p2),
+        label: p2 ? "Full kedvezmény (" + q + " minősülő szolg., " + Math.round(p2 * 100) + "%)" : ""
+      };
+    }
+    return { off: 0, label: "" };
+  }
+
+  function computeProvider(provKey, subs, loyalty) {
+    var prov = PROVIDERS[provKey], lines = [];
+    for (var i = 0; i < subs.length; i++) {
+      var s = subs[i];
+      var r = subBase(prov,
+        findNeed(CALL_PROFILES, s.call), findNeed(DATA_PROFILES, s.data),
+        findNeed(SPEED_PROFILES, s.speed), findNeed(SMS_PROFILES, s.sms),
+        loyalty, s.dev === "i");
+      if (!r) return { provKey: provKey, name: prov.name, feasible: false };
+      lines.push(r);
+    }
+    var sum = lines.reduce(function (t, l) { return t + l.base; }, 0);
+    var hh = householdDiscount(prov, lines);
+    var monthly = Math.max(0, sum - hh.off);
+    var minSpeed = Math.min.apply(null, lines.map(function (l) { return speedNum(l.speed); }));
+    return {
+      provKey: provKey, name: prov.name, feasible: true, lines: lines, sum: sum,
+      hhOff: hh.off, hhLabel: hh.label, monthly: monthly, minSpeed: minSpeed
+    };
+  }
+
+  function manualLine(prov, provKey, line, loyalty, device) {
+    var exList = EXTRAS[provKey] || [];
+    var chosen = (line.tex || []).map(function (id) {
+      return exList.find(function (e) { return e.id === id; });
+    }).filter(Boolean);
+    var extras = chosen.reduce(function (t, e) { return t + e.price; }, 0);
+
+    if (prov.structure === "split") {
+      var v = prov.voiceOptions.find(function (o) { return o.id === line.voice; }) || prov.voiceOptions[0];
+      var d = prov.dataOptions.find(function (o) { return o.id === line.net; }) || prov.dataOptions[0];
+      return {
+        label: v.name + " + " + d.name, base: v.price + d.price + prov.ePack,
+        extras: extras, extrasList: chosen, noBundle: false, smsUnlim: false, speed: d.speed
+      };
+    }
+    var planId = provKey === "yettel" ? line.yplan : line.oplan;
+    var p = prov.plans.find(function (o) { return o.id === planId; }) || prov.plans[0];
+    var dev = !!line.dev;
+    var canDevice = dev && p.listDevice != null;
+    var base = canDevice ? p.listDevice : p.list;
+    if (loyalty && !dev && p.promo) base -= p.promo;
+    return {
+      label: p.name, base: base, extras: extras, extrasList: chosen,
+      noBundle: !!p.noBundle, smsUnlim: !!p.smsUnlimited, dev: dev, deviceApplied: canDevice, speed: p.speed
+    };
+  }
+
+  var ft = function (x) { return Math.round(x).toLocaleString("hu-HU") + " Ft"; };
+
+  /* ============================ ÁLLAPOT ============================ */
+
+  var DEF_SUB = { call: "sok", data: "d15", speed: "gyors", sms: "alap", dev: "n" };
+  var S = {
+    count: 2,
+    subs: [
+      { call: "sok", data: "d15", speed: "gyors", sms: "alap", dev: "n" },
+      { call: "alig", data: "d5", speed: "alap", sms: "alap", dev: "n" },
+      Object.assign({}, DEF_SUB), Object.assign({}, DEF_SUB), Object.assign({}, DEF_SUB)
+    ],
+    loyalty: true,
+    result: null, openRow: null, showMethod: false,
+    mProv: "telekom", mCount: 2, mLoyalty: true, mDevice: false, mExOpen: {},
+    mLines: [
+      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
+      { voice: "tvS", net: "tdS", tex: [], dev: false, yplan: "yStart", oplan: "oS" },
+      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
+      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
+      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" }
+    ]
+  };
+
+  var LS_KEY = "hhmobil.v1";
+  function save() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        count: S.count, subs: S.subs, loyalty: S.loyalty,
+        mProv: S.mProv, mCount: S.mCount, mLoyalty: S.mLoyalty, mDevice: S.mDevice, mLines: S.mLines
+      }));
+    } catch (e) { /* privát mód: nem baj */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      ["count", "loyalty", "mProv", "mCount", "mLoyalty", "mDevice"].forEach(function (k) {
+        if (d[k] !== undefined) S[k] = d[k];
+      });
+      if (Array.isArray(d.subs) && d.subs.length === 5) S.subs = d.subs;
+      if (Array.isArray(d.mLines) && d.mLines.length === 5) S.mLines = d.mLines;
+    } catch (e) { /* sérült adat: alapértelmezés */ }
+  }
+
+  var $ = function (sel) { return document.querySelector(sel); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+
+  /* ============================ RENDER: AUTOMATA ============================ */
+
+  function selectHTML(id, label, profiles, value, dataAttrs) {
+    var opts = profiles.map(function (p) {
+      return '<option value="' + p.key + '"' + (p.key === value ? " selected" : "") + '>' +
+        esc(p.label) + (p.hint ? " — " + esc(p.hint) : "") + "</option>";
+    }).join("");
+    return '<div class="fwrap"><label class="flabel" for="' + id + '">' + esc(label) + '</label>' +
+      '<div class="selbox"><select id="' + id + '" ' + dataAttrs + '>' + opts + "</select></div></div>";
+  }
+
+  function renderSubs() {
+    var out = "";
+    for (var i = 0; i < S.count; i++) {
+      var s = S.subs[i];
+      out += '<section class="card sub-card"><div class="sub-title">' + (i + 1) + ". előfizetés</div>" +
+        selectHTML("s" + i + "-call", "Beszélgetés", CALL_PROFILES, s.call, 'data-sub="' + i + '" data-f="call"') +
+        selectHTML("s" + i + "-data", "Mobilnet", DATA_PROFILES, s.data, 'data-sub="' + i + '" data-f="data"') +
+        selectHTML("s" + i + "-speed", "Netsebesség", SPEED_PROFILES, s.speed, 'data-sub="' + i + '" data-f="speed"') +
+        selectHTML("s" + i + "-sms", "SMS", SMS_PROFILES, s.sms, 'data-sub="' + i + '" data-f="sms"') +
+        selectHTML("s" + i + "-dev", "Készülék erre a számra", DEVICE_PROFILES, s.dev, 'data-sub="' + i + '" data-f="dev"') +
+        "</section>";
+    }
+    $("#subs").innerHTML = out;
+    $("#cnt-val").textContent = S.count;
+    var segs = $("#loyal-seg").querySelectorAll("button");
+    segs[0].setAttribute("aria-pressed", S.loyalty ? "true" : "false");
+    segs[1].setAttribute("aria-pressed", S.loyalty ? "false" : "true");
+  }
+
+  function lineTags(l, prov) {
+    var t = "";
+    if (l.deviceApplied) t += ' <span class="tag-f">· készülékkel</span>';
+    if (l.dev && !l.deviceApplied) t += ' <span class="tag-f">· ehhez nincs készülékes ár</span>';
+    if (l.smsUnlim) t += ' <span class="tag-a">· korlátlan SMS</span>';
+    if (l.smsGap) t += ' <span class="tag-w">· nincs korlátlan SMS-opció</span>';
+    if (isFinite(speedNum(l.speed)) && speedNum(l.speed) <= SLOW) t += ' <span class="tag-w">· ' + l.speed + " Mbit/s</span>";
+    if (l.noBundle) t += ' <span class="tag-f">· nem számít a kedvezménybe</span>';
+    return t;
+  }
+
+  function renderResult() {
+    var host = $("#eredmeny");
+    if (!S.result) { host.innerHTML = ""; return; }
+    var res = S.result;
+    if (!res.length) {
+      host.innerHTML = '<div class="warnbox" style="margin-top:24px">Ezekkel az igényekkel egyik szolgáltatónál sincs megfelelő csomag. Próbáld lejjebb venni a netsebességet vagy az adatmennyiséget.</div>';
+      return;
+    }
+    var maxM = Math.max.apply(null, res.map(function (r) { return r.monthly; }));
+    var html = '<h2 class="res-h">EREDMÉNY — nyilvános árak alapján, kb.</h2>';
+
+    res.forEach(function (r, idx) {
+      var win = idx === 0, open = S.openRow === r.provKey;
+      var slow = isFinite(r.minSpeed) && r.minSpeed <= SLOW;
+      html += '<div class="rcard' + (win ? " win" : "") + '">' +
+        '<div class="rhead"><div class="rname">' +
+        '<span class="swatch" style="background:' + PCOLOR[r.provKey] + '"></span>' +
+        '<span class="pname">' + esc(r.name) + "</span>" +
+        (win ? '<span class="badge">legolcsóbb</span>' : "") +
+        '</div><div style="text-align:right"><div class="price">' + ft(r.monthly) + '</div><div class="per">/ hó · ' + S.count + " SIM</div></div></div>" +
+        '<div class="bar"><i style="width:' + Math.round((r.monthly / maxM) * 100) + "%;background:" + PCOLOR[r.provKey] + '"></i></div>';
+
+      if (slow) {
+        html += '<div class="warnbox">⚠ Lassú net: a legolcsóbb megfelelő csomag ' + r.minSpeed + ' Mbit/s. Ez épp <b>egy</b> HD Netflix-streamre elég (1080p-hez ~5, 4K-hoz ~15 Mbit/s kell). Két eszköz egyszerre vagy nagy letöltés már akadozik.</div>';
+      }
+      if (r.hhOff > 0) {
+        html += '<div class="note">' + esc(r.hhLabel) + ": <b>−" + ft(r.hhOff) + "</b>/hó (bruttó " + ft(r.sum) + " → " + ft(r.monthly) + ")</div>";
+      }
+      html += '<button class="linkbtn" data-act="row" data-p="' + r.provKey + '">' +
+        (open ? "Bontás elrejtése" : "Előfizetésenkénti bontás") + "</button>";
+
+      if (open) {
+        html += '<div class="bd">';
+        r.lines.forEach(function (l, li) {
+          html += '<div class="bl"><span class="l">' + (li + 1) + ". — " + esc(l.label) + lineTags(l) +
+            '</span><span class="v">' + ft(l.base) + "/hó</span></div>";
+        });
+        html += '<div class="tiny">A háztartási/sávos kedvezmény a fenti összegre, együtt érvényesül.</div></div>';
+      }
+      html += "</div>";
+    });
+
+    if (res.length > 1) {
+      var diff = res[res.length - 1].monthly - res[0].monthly;
+      html += '<div class="card summary">A legolcsóbb (<b>' + esc(res[0].name) + "</b>) havi <b>" + ft(diff) +
+        "</b>-tal olcsóbb a legdrágábbnál — 24 hónapon <b>" + ft(diff * 24) + "</b> különbség.</div>";
+    }
+
+    html += '<div style="margin-top:16px"><button class="linkbtn" data-act="method">' +
+      (S.showMethod ? "Módszertan elrejtése" : "Mit nem látunk? · Módszertan") + "</button>";
+    if (S.showMethod) {
+      html += '<div class="card method">' +
+        "<p><b>Kedvezmények:</b> Telekom sávos (a teljes költés %-a); Yettel Full (a minősülő szolgáltatások SZÁMA, a Start kizárva); One per-előfizetés havidíjkedvezmény hűséggel ÉS készülék nélkül (Z −1000, XL/XXL −2000).</p>" +
+        "<p><b>Készülék:</b> a Telekomnál a havidíjat nem változtatja; a Yettelnél külön, drágább készülékes ár; a One-nál elesik a havidíjkedvezmény. <b>SMS:</b> korlátlan SMS csak a Yettel Prime XXL-ben; Telekomnál +500 Ft/előfizetés (500 SMS opció, közelítés); a One-nál nincs korlátlan SMS-opció.</p>" +
+        "<p><b>Netsebesség:</b> One S/M/Z/L 5 Mbit/s-re fojtott (XL 100, XXL korlátlan); Telekom/Yettel teljes sebesség. <b>Nem tartalmaz:</b> retenciós ajánlat, készülék ára/részlete, belépési díj, inflációkövető korrekció. A Yettel-ár tartós, hűséges ár.</p>" +
+        "</div>";
+    }
+    html += "</div>";
+    host.innerHTML = html;
+  }
+
+  /* ============================ RENDER: KÉZI ============================ */
+
+  function planPriceFor(o, dev) {
+    var canDev = dev && o.listDevice != null;
+    var pr = canDev ? o.listDevice : o.list;
+    if (S.mLoyalty && !dev && o.promo) pr -= o.promo;
+    return pr;
+  }
+
+  function renderTabs() {
+    $("#mtabs").innerHTML = PKEYS.map(function (k) {
+      var on = S.mProv === k;
+      return '<button role="tab" aria-selected="' + on + '" data-act="prov" data-p="' + k + '" style="' +
+        (on ? "background:" + PCOLOR[k] + ";border-color:" + PCOLOR[k] : "") + '">' +
+        (on ? "" : '<span class="dot" style="background:' + PCOLOR[k] + '"></span>') +
+        PROVIDERS[k].name + "</button>";
+    }).join("");
+
+    var t = '<div class="card toggle"><div class="tt">Hűségidő</div><div class="seg">' +
+      '<button data-act="mloyal" data-v="1" aria-pressed="' + (S.mLoyalty ? "true" : "false") + '">Igen</button>' +
+      '<button data-act="mloyal" data-v="0" aria-pressed="' + (!S.mLoyalty ? "true" : "false") + '">Nem</button></div></div>';
+    if (S.mProv === "telekom") {
+      t += '<div class="card toggle"><div class="tt">Készülék</div><div class="seg">' +
+        '<button data-act="mdev" data-v="1" aria-pressed="' + (S.mDevice ? "true" : "false") + '">Igen, kérek</button>' +
+        '<button data-act="mdev" data-v="0" aria-pressed="' + (!S.mDevice ? "true" : "false") + '">Nem, csak SIM</button></div></div>';
+    }
+    $("#mtoggles").innerHTML = t;
+  }
+
+  function optSelect(id, label, options, value, dataAttrs) {
+    var opts = options.map(function (o) {
+      return '<option value="' + o.id + '"' + (o.id === value ? " selected" : "") + ">" +
+        esc(o.name) + " · " + ft(o.__price) + "</option>";
+    }).join("");
+    return '<div class="fwrap"><label class="flabel" for="' + id + '">' + esc(label) + '</label>' +
+      '<div class="selbox"><select id="' + id + '" ' + dataAttrs + '>' + opts + "</select></div></div>";
+  }
+
+  function renderManualLines() {
+    var prov = PROVIDERS[S.mProv], out = "";
+    for (var i = 0; i < S.mCount; i++) {
+      var l = S.mLines[i];
+      out += '<section class="card sub-card"><div class="sub-title">' + (i + 1) + ". előfizetés</div>";
+      if (S.mProv === "telekom") {
+        out += optSelect("m" + i + "-v", "Hang-csomag",
+          prov.voiceOptions.map(function (o) { var c = Object.assign({}, o); c.__price = o.price; return c; }),
+          l.voice, 'data-ml="' + i + '" data-f="voice"');
+        out += optSelect("m" + i + "-n", "Net-opció",
+          prov.dataOptions.map(function (o) { var c = Object.assign({}, o); c.__price = o.price; return c; }),
+          l.net, 'data-ml="' + i + '" data-f="net"');
+      } else {
+        var fieldName = S.mProv === "yettel" ? "yplan" : "oplan";
+        out += optSelect("m" + i + "-p", "Tarifa",
+          prov.plans.map(function (o) { var c = Object.assign({}, o); c.__price = planPriceFor(o, l.dev); return c; }),
+          l[fieldName], 'data-ml="' + i + '" data-f="' + fieldName + '"');
+        out += '<div class="fwrap"><div class="flabel">Készülék erre a számra</div><div class="seg">' +
+          '<button data-act="mldev" data-i="' + i + '" data-v="0" aria-pressed="' + (!l.dev ? "true" : "false") + '">Nem, csak SIM</button>' +
+          '<button data-act="mldev" data-i="' + i + '" data-v="1" aria-pressed="' + (l.dev ? "true" : "false") + '">Igen, kérek</button></div></div>';
+      }
+      var list = EXTRAS[S.mProv] || [];
+      if (list.length) {
+        var cnt = (l.tex || []).filter(function (id) { return list.some(function (e) { return e.id === id; }); }).length;
+        out += '<button class="linkbtn" data-act="mex" data-i="' + i + '">' +
+          (S.mExOpen[i] ? "Extrák elrejtése" : "Extrák" + (cnt ? " (" + cnt + ")" : "")) + "</button>";
+        if (S.mExOpen[i]) {
+          out += '<div class="exlist">' + list.map(function (e) {
+            return '<label><input type="checkbox" data-act="tex" data-i="' + i + '" data-id="' + e.id + '"' +
+              ((l.tex || []).indexOf(e.id) >= 0 ? " checked" : "") + '><span class="en">' + esc(e.name) +
+              '</span><span class="ep">' + ft(e.price) + "</span></label>";
+          }).join("") + "</div>";
+        }
+      }
+      out += "</section>";
+    }
+    $("#mlines").innerHTML = out;
+    $("#mcnt-val").textContent = S.mCount;
+  }
+
+  function renderManualSummary() {
+    var prov = PROVIDERS[S.mProv];
+    var lines = S.mLines.slice(0, S.mCount).map(function (l) { return manualLine(prov, S.mProv, l, S.mLoyalty, S.mDevice); });
+    var baseSum = lines.reduce(function (t, l) { return t + l.base; }, 0);
+    var extrasSum = lines.reduce(function (t, l) { return t + l.extras; }, 0);
+    var hhOff = 0, hhLabel = "";
+
+    if (prov.householdKind === "band") {
+      var pct = bandPct(prov.bands, baseSum + extrasSum);   // az extrák emelik a sávot…
+      hhOff = Math.round(baseSum * pct);                    // …de a % csak az alapcsomagra jár
+      if (pct) hhLabel = "sávos kedvezmény (" + Math.round(pct * 100) + "%)";
+    } else {
+      var hh = householdDiscount(prov, lines);
+      hhOff = hh.off; hhLabel = hh.label;
+    }
+    var monthly = Math.max(0, baseSum - hhOff + extrasSum);
+    var col = PCOLOR[S.mProv];
+
+    var html = '<div class="msum" style="border:1px solid ' + col + '">' +
+      '<div class="rhead"><div class="rname"><span class="swatch" style="background:' + col + '"></span>' +
+      '<span class="pname">' + prov.name + ' — összesen</span></div>' +
+      '<div style="text-align:right"><div class="price">' + ft(monthly) + '</div><div class="per">/ hó' +
+      (S.mProv === "telekom" ? (S.mDevice ? " · készülékkel" : " · SIM") : "") + "</div></div></div>";
+
+    if (hhOff > 0) html += '<div class="note">' + esc(hhLabel) + ": <b>−" + ft(hhOff) + "</b>/hó</div>";
+    if (extrasSum > 0) {
+      html += '<div class="note" style="margin-top:6px">extrák: <b>+' + ft(extrasSum) + "</b>/hó" +
+        (prov.householdKind === "band" ? " · beleszámít a sávos szintbe, de kedvezményt nem kap" : "") + "</div>";
+    }
+    html += '<div class="bd">';
+    lines.forEach(function (l, i) {
+      html += '<div class="mline"><div class="bl"><span class="l">' + (i + 1) + ". — " + esc(l.label) + lineTags(l) +
+        '</span><span class="v">' + ft(l.base + l.extras) + "/hó</span></div>";
+      if (l.extrasList && l.extrasList.length) {
+        html += '<div class="mex">+ extrák: ' + l.extrasList.map(function (e) { return esc(e.name); }).join(", ") +
+          " (" + ft(l.extras) + ")</div>";
+      }
+      html += "</div>";
+    });
+    html += '<div class="tiny">24 hónapra összesen kb. ' + ft(monthly * 24) + ".</div></div></div>";
+    $("#msum").innerHTML = html;
+  }
+
+  function renderManual() { renderTabs(); renderManualLines(); renderManualSummary(); }
+
+  /* ============================ ESEMÉNYEK ============================ */
+
+  function calc() {
+    var active = S.subs.slice(0, S.count);
+    S.result = PKEYS.map(function (k) { return computeProvider(k, active, S.loyalty); })
+      .filter(function (r) { return r.feasible; })
+      .sort(function (a, b) { return a.monthly - b.monthly; });
+    S.openRow = null;
+    renderResult();
+    var el = document.getElementById("eredmeny");
+    if (el) setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 40);
+  }
+
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-act]");
+    if (!b || b.tagName === "SELECT" || b.tagName === "INPUT") return;
+    var a = b.getAttribute("data-act");
+
+    if (a === "count") {
+      var d = +b.getAttribute("data-d");
+      S.count = Math.min(5, Math.max(1, S.count + d));
+      renderSubs(); if (S.result) calc(); save();
+    } else if (a === "loyal") {
+      S.loyalty = b.getAttribute("data-v") === "1";
+      renderSubs(); if (S.result) calc(); save();
+    } else if (a === "calc") {
+      calc();
+    } else if (a === "row") {
+      var p = b.getAttribute("data-p");
+      S.openRow = S.openRow === p ? null : p;
+      renderResult();
+    } else if (a === "method") {
+      S.showMethod = !S.showMethod; renderResult();
+    } else if (a === "prov") {
+      S.mProv = b.getAttribute("data-p"); S.mExOpen = {}; renderManual(); save();
+    } else if (a === "mloyal") {
+      S.mLoyalty = b.getAttribute("data-v") === "1"; renderManual(); save();
+    } else if (a === "mdev") {
+      S.mDevice = b.getAttribute("data-v") === "1"; renderManual(); save();
+    } else if (a === "mcount") {
+      var d2 = +b.getAttribute("data-d");
+      S.mCount = Math.min(5, Math.max(1, S.mCount + d2));
+      renderManualLines(); renderManualSummary(); save();
+    } else if (a === "mldev") {
+      var i = +b.getAttribute("data-i");
+      S.mLines[i].dev = b.getAttribute("data-v") === "1";
+      renderManualLines(); renderManualSummary(); save();
+    } else if (a === "mex") {
+      var j = +b.getAttribute("data-i");
+      S.mExOpen[j] = !S.mExOpen[j];
+      renderManualLines();
+    }
+  });
+
+  document.addEventListener("change", function (ev) {
+    var t = ev.target;
+    if (t.matches("select[data-sub]")) {
+      S.subs[+t.getAttribute("data-sub")][t.getAttribute("data-f")] = t.value;
+      if (S.result) calc();
+      save();
+    } else if (t.matches("select[data-ml]")) {
+      S.mLines[+t.getAttribute("data-ml")][t.getAttribute("data-f")] = t.value;
+      renderManualSummary(); save();
+    } else if (t.matches('input[data-act="tex"]')) {
+      var i = +t.getAttribute("data-i"), id = t.getAttribute("data-id");
+      var arr = S.mLines[i].tex || (S.mLines[i].tex = []);
+      var k = arr.indexOf(id);
+      if (k >= 0) arr.splice(k, 1); else arr.push(id);
+      renderManualSummary();
+      var btn = document.querySelector('[data-act="mex"][data-i="' + i + '"]');
+      if (btn) {
+        var list = EXTRAS[S.mProv] || [];
+        var cnt = arr.filter(function (x) { return list.some(function (e) { return e.id === x; }); }).length;
+        btn.textContent = "Extrák elrejtése";
+        void cnt;
+      }
+      save();
+    }
+  });
+
+  /* ============================ INDULÁS ============================ */
+
+  load();
+  renderSubs();
+  renderManual();
+  calc();   // az oldal működő állapotban nyílik: az alapértelmezett háztartásra már van eredmény
+})();
+</script>
+
+</body>
+</html>
