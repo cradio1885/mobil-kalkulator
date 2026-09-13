@@ -1,9 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="description" content="Ingyenes háztartási mobildíj-kalkulátor: Telekom, Yettel és One SIM-only tarifák összehasonlítása a családi kedvezményekkel együtt.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FFD62E">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mobil-kalkulátor">
+<meta name="application-name" content="Mobil-kalkulátor">
 <title>Háztartási mobil-kalkulátor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,8 +26,9 @@
     --accent:#0B0B0B; --on-accent:#FFD62E; --accent-soft:#FFFFFF; --accent-line:#0B0B0B;
     --alert:#B3261E; --alert-bg:#FFFFFF; --alert-line:#0B0B0B;
     --track:rgba(11,11,11,.14);
-    --telekom:#C4106A; --yettel:#2B5BD7; --one:#0F7A55;
-    --tint-telekom:#FFF2F8; --tint-yettel:#F2F5FE; --tint-one:#EFFAF4;
+    --telekom:#6D28D9; --yettel:#0F7A55; --one:#2B5BD7;
+    --tint-telekom:#F5F0FE; --tint-yettel:#EFFAF4; --tint-one:#F2F5FE;
+    --ok:#0F7A55;
     --shadow:3px 3px 0 #0B0B0B;
     --shadow-lg:5px 5px 0 #0B0B0B;
     --font:"Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -120,7 +130,7 @@
   .bl{display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:5px 0;}
   .bl .l{color:var(--muted);}
   .bl .v{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
-  .tag-a{color:var(--one);} .tag-w{color:var(--alert);} .tag-f{color:var(--faint);}
+  .tag-a{color:var(--ok);} .tag-w{color:var(--alert);} .tag-f{color:var(--faint);}
   .tiny{font-size:12px; color:var(--faint); margin-top:4px;}
   .summary{font-size:14px; line-height:1.55; padding:15px 16px; border-radius:var(--r); margin-top:4px;}
   .method{margin-top:10px; padding:15px 16px; border-radius:var(--r); font-size:13px;
@@ -164,19 +174,8 @@
   }
 </style>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#FFD62E">
-<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Mobil-kalkulátor">
-<meta name="application-name" content="Mobil-kalkulátor">
-<meta name="description" content="Melyik szolgáltatónál a legolcsóbb az egész háztartás? Telekom, Yettel és One SIM-only árak összehasonlítása.">
 </head>
 <body>
-
 <div class="wrap">
   <div class="eyebrow">
     <span style="display:inline-flex;gap:4px">
@@ -300,8 +299,8 @@
     }
   };
   var PKEYS = ["telekom", "yettel", "one"];
-  var PCOLOR = { telekom: "#C4106A", yettel: "#2B5BD7", one: "#0F7A55" };
-  var PTINT  = { telekom: "#FFF2F8", yettel: "#F2F5FE", one: "#EFFAF4" };
+  var PCOLOR = { telekom: "#6D28D9", yettel: "#0F7A55", one: "#2B5BD7" };
+  var PTINT  = { telekom: "#F5F0FE", yettel: "#EFFAF4", one: "#F2F5FE" };
   var PLINE  = { telekom: "#0B0B0B", yettel: "#0B0B0B", one: "#0B0B0B" };
 
   var CALL_PROFILES = [
