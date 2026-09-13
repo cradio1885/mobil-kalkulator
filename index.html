@@ -16,8 +16,11 @@
     --paper:#FBFAF7; --card:#FFFFFF; --ink:#1C1E1D; --muted:#6B6E6A; --line:#E7E3DB;
     --accent:#0F6E63; --accent-soft:#E7F0EE; --accent-line:#CFE3DF;
     --alert:#9A3412; --alert-bg:#FDEBE0; --alert-line:#F3C6AE;
+    --warn:#7A5E00; --warn-line:#E6D9A8;
     --track:#EFEDE7; --faint:#A6A69F;
     --telekom:#C4106A; --yettel:#2B5BD7; --one:#1AA672;
+    --tint-telekom:#FBF0F6; --tint-yettel:#F1F4FC; --tint-one:#EEF8F3;
+    --line-telekom:#EFD8E5; --line-yettel:#D8E0F7; --line-one:#D4EDE2;
     --shadow:0 1px 2px rgba(28,30,29,.04), 0 4px 14px rgba(28,30,29,.05);
     --shadow-lg:0 2px 6px rgba(15,110,99,.08), 0 10px 30px rgba(15,110,99,.10);
     --font:"Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -72,12 +75,12 @@
 
   .res-h{font-size:13px; font-weight:800; color:var(--muted); letter-spacing:.04em; margin:0 0 14px;}
   .rcard{border:1px solid var(--line); border-radius:16px; padding:17px; margin-bottom:12px; background:var(--card); box-shadow:var(--shadow);}
-  .rcard.win{border-color:var(--accent); background:var(--accent-soft); box-shadow:var(--shadow-lg);}
+  .rcard.win{padding:16px; box-shadow:var(--shadow-lg);}
   .rhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
   .rname{display:flex; align-items:center; gap:10px;}
   .swatch{width:10px; height:10px; border-radius:3px; display:inline-block;}
   .pname{font-weight:800; font-size:17px;}
-  .badge{font-size:11px; font-weight:800; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 8px; white-space:nowrap;}
+  .badge{font-size:11px; font-weight:800; color:#fff; border-radius:999px; padding:3px 9px; white-space:nowrap;}
   .price{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.01em; white-space:nowrap;}
   .per{font-size:12px; color:var(--muted);}
   .bar{height:6px; background:var(--track); border-radius:999px; margin-top:12px; overflow:hidden;}
@@ -86,10 +89,12 @@
     border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; font-weight:600;}
   .note{margin-top:12px; font-size:13px; color:var(--muted);}
   .note b{color:var(--ink);}
+  .hint{margin-top:12px; border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; font-weight:600;
+    background:var(--accent-soft); border:1px solid var(--accent-line); color:#0B5049;}
+  .hint.max{background:#F6F2E4; border-color:var(--warn-line); color:var(--warn);}
   .linkbtn{background:transparent; border:none; color:var(--accent); font-weight:700; font-size:13px; padding:0; margin-top:12px;}
   .linkbtn:hover{text-decoration:underline;}
-  .bd{margin-top:10px; border-top:1px solid var(--line); padding-top:10px;}
-  .rcard.win .bd{border-top-color:var(--accent-line);}
+  .bd{margin-top:10px; border-top:1px solid rgba(28,30,29,.10); padding-top:10px;}
   .bl{display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:5px 0;}
   .bl .l{color:var(--muted);}
   .bl .v{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
@@ -114,7 +119,11 @@
   .mline{padding:4px 0;}
   .mex{font-size:12px; color:var(--faint); margin-top:2px;}
 
-  footer{margin-top:40px; padding-top:18px; border-top:1px solid var(--line); font-size:12.5px; color:var(--faint); line-height:1.6;}
+  footer{margin-top:40px; border:1px solid var(--line); border-left:4px solid var(--ink); border-radius:12px;
+    background:var(--card); padding:16px 18px; font-size:13px; color:var(--muted); line-height:1.6;}
+  footer p{margin:0;}
+  footer p + p{margin-top:8px;}
+  footer .lead{font-weight:800; color:var(--ink); font-size:14px;}
 
   @media (max-width:430px){
     h1{font-size:23px;}
@@ -187,8 +196,13 @@
   </section>
 
   <footer>
-    Tájékoztató kalkuláció nyilvános, 2026-os SIM-only listaárak alapján. Nem tartalmaz retenciós ajánlatot,
-    készülékárat/részletet, belépési díjat és inflációkövető korrekciót. A tényleges ajánlat a szolgáltatónál dől el.
+    <p class="lead">Ez nem hivatalos ajánlattétel.</p>
+    <p>Az oldal a szolgáltatók honlapján elérhető nyilvános, 2026-os SIM-only listaárak alapján számol, és
+      tájékoztató jellegű. Nem áll kapcsolatban a Telekommal, a Yettellel és a One-nal, és nem jogosult
+      a nevükben ajánlatot tenni.</p>
+    <p>A kalkuláció nem tartalmaz retenciós (megtartó) ajánlatot, készülékárat vagy -részletet, belépési díjat
+      és inflációkövető korrekciót. Az árak változhatnak, és az egyedi feltételek eltérhetnek az itt
+      látottaktól — a rád vonatkozó tényleges ajánlat mindig a szolgáltatónál dől el.</p>
   </footer>
 </div>
 
@@ -247,7 +261,9 @@
     }
   };
   var PKEYS = ["telekom", "yettel", "one"];
-  var PCOLOR = { telekom: "var(--telekom)", yettel: "var(--yettel)", one: "var(--one)" };
+  var PCOLOR = { telekom: "#C4106A", yettel: "#2B5BD7", one: "#1AA672" };
+  var PTINT  = { telekom: "#FBF0F6", yettel: "#F1F4FC", one: "#EEF8F3" };
+  var PLINE  = { telekom: "#EFD8E5", yettel: "#D8E0F7", one: "#D4EDE2" };
 
   var CALL_PROFILES = [
     { key: "alig", label: "Alig", hint: "~50 perc", need: 50 },
@@ -424,47 +440,22 @@
 
   /* ============================ ÁLLAPOT ============================ */
 
-  var DEF_SUB = { call: "sok", data: "d15", speed: "gyors", sms: "alap", dev: "n" };
+  // Alapértelmezés: mindenütt a legmagasabb / korlátlan opció.
+  var DEF_SUB = { call: "korl", data: "dU", speed: "max", sms: "sok", dev: "i" };
+  var DEF_MLINE = { voice: "tvL", net: "tdL", tex: [], dev: true, yplan: "yXXL", oplan: "oXXL" };
+  var mk = function (o) { return Object.assign({}, o, { tex: [] }); };
+
   var S = {
     count: 2,
-    subs: [
-      { call: "sok", data: "d15", speed: "gyors", sms: "alap", dev: "n" },
-      { call: "alig", data: "d5", speed: "alap", sms: "alap", dev: "n" },
-      Object.assign({}, DEF_SUB), Object.assign({}, DEF_SUB), Object.assign({}, DEF_SUB)
-    ],
+    subs: [mk(DEF_SUB), mk(DEF_SUB), mk(DEF_SUB), mk(DEF_SUB), mk(DEF_SUB)],
     loyalty: true,
     result: null, openRow: null, showMethod: false,
-    mProv: "telekom", mCount: 2, mLoyalty: true, mDevice: false, mExOpen: {},
-    mLines: [
-      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
-      { voice: "tvS", net: "tdS", tex: [], dev: false, yplan: "yStart", oplan: "oS" },
-      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
-      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" },
-      { voice: "tvL", net: "tdM", tex: [], dev: false, yplan: "yL", oplan: "oL" }
-    ]
+    mProv: "telekom", mCount: 2, mLoyalty: true, mDevice: true, mExOpen: {},
+    mLines: [mk(DEF_MLINE), mk(DEF_MLINE), mk(DEF_MLINE), mk(DEF_MLINE), mk(DEF_MLINE)]
   };
 
-  var LS_KEY = "hhmobil.v1";
-  function save() {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        count: S.count, subs: S.subs, loyalty: S.loyalty,
-        mProv: S.mProv, mCount: S.mCount, mLoyalty: S.mLoyalty, mDevice: S.mDevice, mLines: S.mLines
-      }));
-    } catch (e) { /* privát mód: nem baj */ }
-  }
-  function load() {
-    try {
-      var raw = localStorage.getItem(LS_KEY);
-      if (!raw) return;
-      var d = JSON.parse(raw);
-      ["count", "loyalty", "mProv", "mCount", "mLoyalty", "mDevice"].forEach(function (k) {
-        if (d[k] !== undefined) S[k] = d[k];
-      });
-      if (Array.isArray(d.subs) && d.subs.length === 5) S.subs = d.subs;
-      if (Array.isArray(d.mLines) && d.mLines.length === 5) S.mLines = d.mLines;
-    } catch (e) { /* sérült adat: alapértelmezés */ }
-  }
+  // Az oldal nem jegyzi meg a beállításokat: minden megnyitás tiszta lappal indul.
+  function save() {}
 
   var $ = function (sel) { return document.querySelector(sel); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
@@ -524,11 +515,13 @@
     res.forEach(function (r, idx) {
       var win = idx === 0, open = S.openRow === r.provKey;
       var slow = isFinite(r.minSpeed) && r.minSpeed <= SLOW;
-      html += '<div class="rcard' + (win ? " win" : "") + '">' +
+      var pc = PCOLOR[r.provKey];
+      html += '<div class="rcard' + (win ? " win" : "") + '" style="background:' + PTINT[r.provKey] +
+        ";border:" + (win ? "2px solid " + pc : "1px solid " + PLINE[r.provKey]) + '">' +
         '<div class="rhead"><div class="rname">' +
-        '<span class="swatch" style="background:' + PCOLOR[r.provKey] + '"></span>' +
+        '<span class="swatch" style="background:' + pc + '"></span>' +
         '<span class="pname">' + esc(r.name) + "</span>" +
-        (win ? '<span class="badge">legolcsóbb</span>' : "") +
+        (win ? '<span class="badge" style="background:' + pc + '">legolcsóbb</span>' : "") +
         '</div><div style="text-align:right"><div class="price">' + ft(r.monthly) + '</div><div class="per">/ hó · ' + S.count + " SIM</div></div></div>" +
         '<div class="bar"><i style="width:' + Math.round((r.monthly / maxM) * 100) + "%;background:" + PCOLOR[r.provKey] + '"></i></div>';
 
@@ -573,6 +566,15 @@
 
   /* ============================ RENDER: KÉZI ============================ */
 
+  // Telekom sávok: 20 000 / 30 000 / 50 000 Ft-nál lép a 15 / 20 / 30%.
+  function bandHint(spend) {
+    var steps = [{ t: 20000, p: 15 }, { t: 30000, p: 20 }, { t: 50000, p: 30 }];
+    for (var i = 0; i < steps.length; i++) {
+      if (spend < steps[i].t) return { max: false, need: steps[i].t - spend, pct: steps[i].p };
+    }
+    return { max: true };
+  }
+
   function planPriceFor(o, dev) {
     var canDev = dev && o.listDevice != null;
     var pr = canDev ? o.listDevice : o.list;
@@ -613,7 +615,8 @@
     var prov = PROVIDERS[S.mProv], out = "";
     for (var i = 0; i < S.mCount; i++) {
       var l = S.mLines[i];
-      out += '<section class="card sub-card"><div class="sub-title">' + (i + 1) + ". előfizetés</div>";
+      out += '<section class="card sub-card" style="background:' + PTINT[S.mProv] + ";border-color:" + PLINE[S.mProv] +
+        '"><div class="sub-title">' + (i + 1) + ". előfizetés</div>";
       if (S.mProv === "telekom") {
         out += optSelect("m" + i + "-v", "Hang-csomag",
           prov.voiceOptions.map(function (o) { var c = Object.assign({}, o); c.__price = o.price; return c; }),
@@ -667,16 +670,29 @@
     var monthly = Math.max(0, baseSum - hhOff + extrasSum);
     var col = PCOLOR[S.mProv];
 
-    var html = '<div class="msum" style="border:1px solid ' + col + '">' +
+    var html = '<div class="msum" style="border:2px solid ' + col + ";background:" + PTINT[S.mProv] + '">' +
       '<div class="rhead"><div class="rname"><span class="swatch" style="background:' + col + '"></span>' +
       '<span class="pname">' + prov.name + ' — összesen</span></div>' +
       '<div style="text-align:right"><div class="price">' + ft(monthly) + '</div><div class="per">/ hó' +
       (S.mProv === "telekom" ? (S.mDevice ? " · készülékkel" : " · SIM") : "") + "</div></div></div>";
 
-    if (hhOff > 0) html += '<div class="note">' + esc(hhLabel) + ": <b>−" + ft(hhOff) + "</b>/hó</div>";
+    html += '<div class="note">kedvezmény előtti csomagár: <b>' + ft(baseSum) + "</b>/hó" +
+      (S.mCount > 1 ? " (" + S.mCount + " előfizetés együtt)" : "") + "</div>";
     if (extrasSum > 0) {
       html += '<div class="note" style="margin-top:6px">extrák: <b>+' + ft(extrasSum) + "</b>/hó" +
         (prov.householdKind === "band" ? " · beleszámít a sávos szintbe, de kedvezményt nem kap" : "") + "</div>";
+    }
+    if (hhOff > 0) {
+      html += '<div class="note" style="margin-top:6px">' + esc(hhLabel) + ": <b>−" + ft(hhOff) + "</b>/hó</div>";
+    } else {
+      html += '<div class="note" style="margin-top:6px">ezzel az összeállítással nem jár kedvezmény</div>';
+    }
+    if (prov.householdKind === "band") {
+      var bh = bandHint(baseSum + extrasSum);
+      html += bh.max
+        ? '<div class="hint max">★ Elérted a legnagyobb kedvezményszintet (30%) — efölött nincs magasabb sáv.</div>'
+        : '<div class="hint">Még <b>' + ft(bh.need) + "</b> havi költés hiányzik a <b>" + bh.pct +
+          "%-os</b> sávhoz. A sávot a fizetendő összeg (csomagok + extrák) dönti el.</div>";
     }
     html += '<div class="bd">';
     lines.forEach(function (l, i) {
@@ -695,6 +711,12 @@
   function renderManual() { renderTabs(); renderManualLines(); renderManualSummary(); }
 
   /* ============================ ESEMÉNYEK ============================ */
+
+  // Az eredmény csak a Számítás gombra jelenik meg; bármilyen módosítás elrejti az elavult eredményt.
+  function clearResult() {
+    if (!S.result) return;
+    S.result = null; S.openRow = null; renderResult();
+  }
 
   function calc() {
     var active = S.subs.slice(0, S.count);
@@ -715,10 +737,10 @@
     if (a === "count") {
       var d = +b.getAttribute("data-d");
       S.count = Math.min(5, Math.max(1, S.count + d));
-      renderSubs(); if (S.result) calc(); save();
+      renderSubs(); clearResult();
     } else if (a === "loyal") {
       S.loyalty = b.getAttribute("data-v") === "1";
-      renderSubs(); if (S.result) calc(); save();
+      renderSubs(); clearResult();
     } else if (a === "calc") {
       calc();
     } else if (a === "row") {
@@ -752,8 +774,7 @@
     var t = ev.target;
     if (t.matches("select[data-sub]")) {
       S.subs[+t.getAttribute("data-sub")][t.getAttribute("data-f")] = t.value;
-      if (S.result) calc();
-      save();
+      clearResult();
     } else if (t.matches("select[data-ml]")) {
       S.mLines[+t.getAttribute("data-ml")][t.getAttribute("data-f")] = t.value;
       renderManualSummary(); save();
@@ -776,10 +797,9 @@
 
   /* ============================ INDULÁS ============================ */
 
-  load();
   renderSubs();
   renderManual();
-  calc();   // az oldal működő állapotban nyílik: az alapértelmezett háztartásra már van eredmény
+  // Az oldal a lap tetején, eredmény nélkül nyílik.
 })();
 </script>
 
