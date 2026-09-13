@@ -1,0 +1,20 @@
+{
+  "name": "Háztartási mobil-kalkulátor",
+  "short_name": "Mobil-kalkulátor",
+  "description": "Melyik szolgáltatónál a legolcsóbb az egész háztartás? Telekom, Yettel és One SIM-only árak összehasonlítása a három eltérő kedvezménylogikával.",
+  "lang": "hu",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "/mobil-kalkulator/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#FFD62E",
+  "theme_color": "#FFD62E",
+  "categories": ["utilities", "finance", "shopping"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
